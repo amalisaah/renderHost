@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import './Login.css';
 import Submit from "../Components/Submit";
@@ -12,34 +12,43 @@ const  Login = (props)=> {
     
     const navigate = useNavigate()
 
-    const {user} = useContext(LoginContext)
+    const {user,setUser} = useContext(LoginContext)
     function handleSubmit(e){
         e.preventDefault();
         const path='/login';
         props.handleSubmit(path);
-        if(user.id) {
-            props.rememberMe ? localStorage.setItem('user',JSON.stringify(user)) : sessionStorage.setItem('user',JSON.stringify(user));
-            console.log(user.id);
-            navigate('/dashboard')
-        }
+        // !user.id && props.handleBlur(true)
+        
     }
   
     /*SET REMEMBER ME STATE*/
-    function handleSelect (e) {  
+    function handleSelect () {  
         props.Remember()
     };
 
-    function handleLoad(){
-        alert('loaded')
-    }
+    /*LOgging in if user exists*/
+    useEffect(()=>{
+        if(user.id) {
+            props.rememberMe ? localStorage.setItem('user',JSON.stringify(user)) : sessionStorage.setItem('user',JSON.stringify(user));
+            // console.log(user.id);
+            navigate('/home')
+        }
+    },[user])
+  
+    /*SET REMEMBER ME STATE*/
+    function handleSelect () {  
+        props.Remember()
+    };
+
 
     return (
         <>
+
             <main className="login flex justify-between h-screen" >
                 
                 <OuterDiv heading='Login'>
-                {props.error && <p role='alert' className='text-error' >username or password incorrect</p>}
-                    <form className='' onSubmit={handleSubmit} onLoad={()=>{console.log('load')}} >
+                {props.error && <p role='alert' className='text-error text-center' >username or password incorrect</p>}
+                    <form className='' onSubmit={handleSubmit}  >
                         <Input type="email" id="email" name="email"  label='Email' onChange={props.handleChange} value={props.value.email} pattern='^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'  />
 
                         <Input type="password" id="pwd" name="password"  label='Password' onChange={props.handleChange} value={props.value.password} />
